@@ -66,7 +66,7 @@ struct AuthView: View {
                     }
                 }
                 .padding()
-                .glassEffect()              // ✅ Liquid Glass
+                .glassEffect()
             }
             .padding()
         }
@@ -110,7 +110,7 @@ struct WeatherCardView: View {
             forecast
         }
         .padding()
-        .glassEffect()     // ✅ Liquid Glass card
+        .glassEffect()
     }
     
     private var header: some View {
