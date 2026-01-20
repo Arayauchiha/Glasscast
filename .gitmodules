@@ -1,0 +1,3 @@
+[submodule "Glasscast-Backend"]
+	path = Glasscast-Backend
+	url = https://github.com/Arayauchiha/Glasscast-Backend
