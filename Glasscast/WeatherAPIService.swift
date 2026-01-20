@@ -18,6 +18,7 @@ enum Endpoint: String {
     case weather = "/data/weather/%@"
     case forecast = "/data/forecast/%@"
     case addFavorite = "/data/add_favorite/%@"
+    case favorites = "/data/favorites"
 }
 
 extension Endpoint {
@@ -84,6 +85,12 @@ class WeatherAPIService: ObservableObject {
         let _: Bool? = await NetworkManager.shared.get(url: url)
     }
     
+    func fetchFavorites() async throws -> [Int] {
+        let url: String = Endpoint.favorites.urlString
+        let cityIds: [Int]? = await NetworkManager.shared.get(url: url)
+        return cityIds ?? []
+    }
+
     func logout() {
         KeychainHelper.remove("accessToken")
     }

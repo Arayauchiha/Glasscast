@@ -2,6 +2,64 @@ import SwiftUI
 import CoreLocation
 internal import Combine
 
+enum TemperatureUnit: String, CaseIterable, Identifiable {
+    case celsius
+    case fahrenheit
+    
+    var id: String { rawValue }
+    
+    var symbol: String {
+        switch self {
+        case .celsius: return "°C"
+        case .fahrenheit: return "°F"
+        }
+    }
+}
+
+struct SettingsView: View {
+    @AppStorage("tempUnit") private var tempUnitRaw = TemperatureUnit.celsius.rawValue
+    @Binding var isAuthenticated: Bool
+    
+    private var tempUnit: Binding<TemperatureUnit> {
+        Binding(
+            get: { TemperatureUnit(rawValue: tempUnitRaw) ?? .celsius },
+            set: { tempUnitRaw = $0.rawValue }
+        )
+    }
+    
+    var body: some View {
+        NavigationView {
+            Form {
+                
+                // 🌡 Temperature Section
+                Section(header: Text("Temperature")) {
+                    Picker("Unit", selection: tempUnit) {
+                        ForEach(TemperatureUnit.allCases) { unit in
+                            Text(unit.symbol).tag(unit)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                }
+                
+                // 🔐 Account Section
+                Section {
+                    Button(role: .destructive) {
+                        signOut()
+                    } label: {
+                        Text("Sign Out")
+                            .frame(maxWidth: .infinity, alignment: .center)
+                    }
+                }
+            }
+            .navigationTitle("Settings")
+        }
+    }
+    
+    private func signOut() {
+        KeychainHelper.remove("accessToken")
+        isAuthenticated = false
+    }
+}
 
 struct AuthView: View {
     @State private var email = ""
@@ -66,7 +124,6 @@ struct AuthView: View {
                     }
                 }
                 .padding()
-                .glassEffect()
             }
             .padding()
         }
@@ -110,7 +167,6 @@ struct WeatherCardView: View {
             forecast
         }
         .padding()
-        .glassEffect()
     }
     
     private var header: some View {
@@ -364,6 +420,11 @@ struct ContentView: View {
                 FavoritesView()
                     .tabItem {
                         Label("Favorites", systemImage: "star.fill")
+                    }
+                
+                SettingsView(isAuthenticated: $isAuthenticated)
+                    .tabItem {
+                        Label("Settings", systemImage: "gearshape.fill")
                     }
             }
         } else {
